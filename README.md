@@ -1,21 +1,21 @@
 # Sistema Lumon
 
-Sistema de gestão de pessoal inspirado na série "Severance" (Ruptura), desenvolvido com Django para fins educacionais.
+Sistema de gestão de pessoal inspirado na série "Severance" (Ruptura), desenvolvido com Django para aulas de Programação WEB do Curso de Bacharelado em Engenharia de Computação.
 
 ## 📋 Sobre o Projeto
 
-O Sistema Lumon é uma aplicação web completa de gerenciamento de funcionários, departamentos e relatórios, com interface moderna e responsiva. Utiliza as melhores práticas de desenvolvimento web com Django, PostgreSQL e tecnologias frontend modernas.
+O Sistema Lumon é uma aplicação web simples de gerenciamento de funcionários, departamentos e relatórios, com interface responsiva para dispositivos de telas de qualquer tamanho.
 
 ## ✨ Funcionalidades
 
-- 🔐 **Autenticação personalizada** (sem django.contrib.auth)
-- 👥 **CRUD de Departamentos** (Criar, Ler, Atualizar, Deletar)
-- 👤 **CRUD de Usuários** com upload de fotos e crop de imagens
-- 📊 **Relatórios por Departamento**
-- 📱 **Interface responsiva** com cards para mobile
-- 🔍 **Sistema de filtros** e paginação
-- 🖼️ **Upload de fotos** com nomes únicos (UUID)
-- 🗑️ **Exclusão automática** de arquivos ao deletar registros
+- Autenticação personalizada (sem django.contrib.auth)
+- CRUD de Departamentos
+- CRUD de Usuários com upload de fotos e crop de imagens
+- Geração de relatório
+- Interface responsiva com cards para mobile
+- Sistema de filtros e paginação
+- Upload de fotos com nomes únicos (UUID)
+- Exclusão automática de arquivos ao deletar registros com Django Signals
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -23,7 +23,7 @@ O Sistema Lumon é uma aplicação web completa de gerenciamento de funcionário
 - **Python 3.11+**
 - **Django 5.2.9** - Framework web
 - **PostgreSQL 17.4** - Banco de dados
-- **psycopg2-binary** - Adapter PostgreSQL
+- **psycopg2-binary** - Adapter/Driver PostgreSQL
 - **Pillow** - Manipulação de imagens
 - **python-decouple** - Gerenciamento de variáveis de ambiente
 
@@ -31,7 +31,7 @@ O Sistema Lumon é uma aplicação web completa de gerenciamento de funcionário
 - **Tailwind CSS** - Framework CSS utilitário
 - **Alpine.js** - Framework JavaScript reativo
 - **HTMX** - Interações AJAX
-- **Toastr.js** - Notificações toast
+- **Toastr.js** - Janelas personalizadas de notificações
 - **Cropper.js** - Crop de imagens
 
 ## 📦 Pré-requisitos
@@ -448,15 +448,3 @@ DEBUG=True
 ```env
 DEBUG=False
 ```
-
-## 📄 Licença
-
-Este projeto foi desenvolvido para fins educacionais.
-
-## 🙏 Créditos
-
-Projeto inspirado na série "Severance" (Ruptura) da Apple TV+.
-
----
-
-**Desenvolvido para o curso de Programação Web**
