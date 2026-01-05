@@ -2,11 +2,11 @@
 
 Sistema de gestão de pessoal inspirado na série "Severance" (Ruptura), desenvolvido com Django para aulas de Programação WEB do Curso de Bacharelado em Engenharia de Computação.
 
-## 📋 Sobre o Projeto
+## Sobre o Projeto
 
 O Sistema Lumon é uma aplicação web simples de gerenciamento de funcionários, departamentos e relatórios, com interface responsiva para dispositivos de telas de qualquer tamanho.
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - Autenticação personalizada (sem django.contrib.auth)
 - CRUD de Departamentos
@@ -17,7 +17,7 @@ O Sistema Lumon é uma aplicação web simples de gerenciamento de funcionários
 - Upload de fotos com nomes únicos (UUID)
 - Exclusão automática de arquivos ao deletar registros com Django Signals
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ### Backend
 - **Python 3.11+**
@@ -34,7 +34,7 @@ O Sistema Lumon é uma aplicação web simples de gerenciamento de funcionários
 - **Toastr.js** - Janelas personalizadas de notificações
 - **Cropper.js** - Crop de imagens
 
-## 📦 Pré-requisitos
+## Pré-requisitos
 
 Antes de começar, certifique-se de ter instalado em sua máquina:
 
@@ -104,7 +104,7 @@ brew install git
 sudo apt install git
 ```
 
-## 🚀 Instalação e Configuração
+## Instalação e Configuração
 
 ### Passo 1: Clonar o Repositório
 
@@ -264,7 +264,7 @@ python manage.py runserver
 
 O servidor iniciará em: **http://127.0.0.1:8000/**
 
-## 🎯 Acessando o Sistema
+## Acessando o Sistema
 
 ### Página de Login
 
@@ -283,7 +283,7 @@ Após executar o `seed_database`, você pode fazer login com:
 | casey@lumon.com | 1234 | Funcionário | Wellness |
 | burt@lumon.com | 1234 | Gerente | O&D |
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 sistema_lumon/
@@ -322,7 +322,7 @@ sistema_lumon/
 └── README.md                   # Este arquivo
 ```
 
-## 🎨 Funcionalidades Detalhadas
+## Funcionalidades Detalhadas
 
 ### 1. Sistema de Autenticação
 - Autenticação personalizada sem `django.contrib.auth.User`
@@ -348,7 +348,7 @@ sistema_lumon/
 - Interface responsiva
 - Botão de impressão
 
-## 🔧 Comandos Úteis
+## Comandos Úteis
 
 ### Popular o banco de dados
 ```bash
@@ -380,7 +380,7 @@ python manage.py dbshell
 python manage.py createsuperuser
 ```
 
-## 🐛 Resolução de Problemas
+## Resolução de Problemas
 
 ### Erro: "relation does not exist"
 **Causa:** Migrations não foram aplicadas
@@ -421,7 +421,7 @@ sudo systemctl start postgresql
 python manage.py seed_database
 ```
 
-## 📚 Recursos Adicionais
+## Recursos Adicionais
 
 ### Django
 - Documentação oficial: https://docs.djangoproject.com/
@@ -436,7 +436,7 @@ python manage.py seed_database
 - Alpine.js: https://alpinejs.dev/
 - HTMX: https://htmx.org/
 
-## 👨‍💻 Desenvolvimento
+## Desenvolvimento
 
 ### Ativar modo debug
 No arquivo `.env`, certifique-se de que:
