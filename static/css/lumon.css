@@ -1,0 +1,398 @@
+/**
+ * Sistema Lumon - Estilos Customizados
+ * Baseado na identidade visual da série "Severance" (Ruptura)
+ */
+
+/* ====================
+   Variáveis de Cores
+   ==================== */
+:root {
+    /* Cores principais da Lumon */
+    --lumon-green: #2d5a3d;          /* Verde institucional escuro */
+    --lumon-green-light: #3d7a4d;    /* Verde claro */
+    --lumon-blue: #1e3a5f;           /* Azul corporativo */
+    --lumon-blue-light: #2e4a6f;     /* Azul claro */
+
+    /* Tons neutros */
+    --lumon-white: #f5f5f5;          /* Branco quente */
+    --lumon-gray-light: #e0e0e0;     /* Cinza claro */
+    --lumon-gray: #7a7a7a;           /* Cinza médio */
+    --lumon-gray-dark: #3a3a3a;      /* Cinza escuro */
+    --lumon-black: #1a1a1a;          /* Preto suave */
+
+    /* Cores de feedback */
+    --success: #28a745;
+    --warning: #ffc107;
+    --error: #dc3545;
+    --info: #17a2b8;
+
+    /* Sombras */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* ====================
+   Reset e Base
+   ==================== */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--lumon-white);
+    color: var(--lumon-gray-dark);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* ====================
+   Navbar
+   ==================== */
+.navbar-lumon {
+    background-color: var(--lumon-green);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.navbar-lumon a {
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.navbar-lumon a:hover {
+    opacity: 0.8;
+}
+
+/* Links dos dropdowns devem ter cor escura, não branca */
+.navbar-lumon .absolute a {
+    color: var(--lumon-gray-dark) !important;
+}
+
+.navbar-lumon .absolute a:hover {
+    background-color: var(--lumon-gray-light);
+    opacity: 1;
+}
+
+/* ====================
+   Botões
+   ==================== */
+.btn-lumon {
+    background-color: var(--lumon-green);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-lumon:hover {
+    background-color: var(--lumon-green-light);
+}
+
+.btn-lumon-secondary {
+    background-color: var(--lumon-blue);
+    color: white;
+}
+
+.btn-lumon-secondary:hover {
+    background-color: var(--lumon-blue-light);
+}
+
+.btn-danger {
+    background-color: var(--error);
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* ====================
+   Cards
+   ==================== */
+.card-lumon {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: var(--shadow-md);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.card-lumon:hover {
+    box-shadow: var(--shadow-lg);
+    transition: box-shadow 0.2s;
+}
+
+/* ====================
+   Formulários
+   ==================== */
+.form-lumon input[type="text"],
+.form-lumon input[type="email"],
+.form-lumon input[type="password"],
+.form-lumon select,
+.form-lumon textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--lumon-gray-light);
+    border-radius: 0.25rem;
+    font-size: 1rem;
+}
+
+.form-lumon input:focus,
+.form-lumon select:focus,
+.form-lumon textarea:focus {
+    outline: none;
+    border-color: var(--lumon-green);
+    box-shadow: 0 0 0 3px rgba(45, 90, 61, 0.1);
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--lumon-gray-dark);
+}
+
+.form-error {
+    color: var(--error);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* ====================
+   Tabelas
+   ==================== */
+.table-lumon {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: var(--shadow-sm);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table-lumon thead {
+    background-color: var(--lumon-green);
+    color: white;
+}
+
+.table-lumon th,
+.table-lumon td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--lumon-gray-light);
+}
+
+.table-lumon tbody tr:hover {
+    background-color: rgba(45, 90, 61, 0.05);
+    cursor: pointer;
+}
+
+.table-lumon tbody tr.selected {
+    background-color: rgba(45, 90, 61, 0.15);
+}
+
+/* Tabela zebrada (para relatórios) */
+.table-zebra tbody tr:nth-child(even) {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* ====================
+   Avatar Circular
+   ==================== */
+.avatar-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: var(--shadow-md);
+}
+
+/* ====================
+   Paginação
+   ==================== */
+.pagination {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.pagination button {
+    background-color: white;
+    border: 1px solid var(--lumon-gray-light);
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 0.25rem;
+    transition: all 0.2s;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: var(--lumon-green);
+    color: white;
+    border-color: var(--lumon-green);
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination button.active {
+    background-color: var(--lumon-green);
+    color: white;
+    border-color: var(--lumon-green);
+}
+
+/* ====================
+   Mensagens/Alertas
+   ==================== */
+.alert {
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* ====================
+   Utilitários
+   ==================== */
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mt-4 { margin-top: 2rem; }
+
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mb-4 { margin-bottom: 2rem; }
+
+.p-1 { padding: 0.5rem; }
+.p-2 { padding: 1rem; }
+.p-3 { padding: 1.5rem; }
+.p-4 { padding: 2rem; }
+
+.d-flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.align-items-center {
+    align-items: center;
+}
+
+.justify-content-center {
+    justify-content: center;
+}
+
+.justify-content-between {
+    justify-content: space-between;
+}
+
+.gap-1 { gap: 0.5rem; }
+.gap-2 { gap: 1rem; }
+.gap-3 { gap: 1.5rem; }
+.gap-4 { gap: 2rem; }
+
+/* ====================
+   Responsividade
+   ==================== */
+@media (max-width: 768px) {
+    .avatar-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .table-lumon {
+        font-size: 0.875rem;
+    }
+
+    .table-lumon th,
+    .table-lumon td {
+        padding: 0.5rem;
+    }
+
+    .card-lumon {
+        padding: 1rem;
+    }
+}
+
+/* ====================
+   Animações
+   ==================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* ====================
+   Estados de Loading
+   ==================== */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.spinner {
+    border: 3px solid var(--lumon-gray-light);
+    border-top: 3px solid var(--lumon-green);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

@@ -1,0 +1,537 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cadastro de Usuários - Sistema Lumon{% endblock %}
+
+{% block extra_css %}
+<style>
+    .preview-container {
+        max-width: 100%;
+        max-height: 300px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #f0f0f0;
+        border-radius: 0.5rem;
+    }
+    .preview-image {
+        max-width: 100%;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div x-data="{
+    modoEdicao: false,
+    usuarioSelecionado: null,
+    showPassword: false,
+    previewUrl: null,
+    cropper: null,
+    selecionarUsuario(user) {
+        this.modoEdicao = true;
+        this.usuarioSelecionado = user;
+        document.getElementById('id').value = user.id;
+        document.getElementById('nome').value = user.nome;
+        document.getElementById('email').value = user.email;
+        document.getElementById('senha').value = '';  // Não exibir senha
+        document.getElementById('perfil').value = user.perfil_id;
+        document.getElementById('departamento').value = user.departamento_id;
+        document.getElementById('acao').value = 'alterar';
+
+        // Exibir foto atual se houver
+        if (user.foto_url) {
+            this.previewUrl = user.foto_url;
+        } else {
+            this.previewUrl = '{% static "img/avatar_default.svg" %}';
+        }
+    },
+    limparFormulario() {
+        this.modoEdicao = false;
+        this.usuarioSelecionado = null;
+        this.previewUrl = null;
+        this.showPassword = false;
+        document.getElementById('id').value = '';
+        document.getElementById('nome').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('senha').value = '';
+        document.getElementById('perfil').value = '';
+        document.getElementById('departamento').value = '';
+        document.getElementById('foto').value = '';
+        document.getElementById('acao').value = 'criar';
+
+        // Destruir cropper se existir
+        if (this.cropper) {
+            this.cropper.destroy();
+            this.cropper = null;
+        }
+    },
+    handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                this.previewUrl = e.target.result;
+
+                // Inicializar Cropper.js após o preview carregar
+                this.$nextTick(() => {
+                    const image = document.getElementById('preview');
+                    if (this.cropper) {
+                        this.cropper.destroy();
+                    }
+                    this.cropper = new Cropper(image, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        autoCropArea: 1,
+                        responsive: true,
+                        crop(event) {
+                            // Aqui pode adicionar lógica se necessário
+                        }
+                    });
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+}">
+
+    <!-- Título -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Cadastro de Usuários</h1>
+        <p class="text-gray-600 mt-2">Gerencie os funcionários da Lumon Industries</p>
+    </div>
+
+    <!-- Grid de Listagem -->
+    <div class="card-lumon mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Funcionários Cadastrados</h2>
+
+        <!-- Filtro por Nome -->
+        <form method="GET" action="{% url 'usuarios' %}" class="mb-4">
+            <div class="flex gap-2">
+                <div class="flex-1 relative">
+                    <input
+                        type="text"
+                        name="nome"
+                        value="{{ nome_filtro }}"
+                        placeholder="Digite o nome"
+                        class="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                    >
+                    <!-- Ícone de lupa -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </div>
+                <button
+                    type="submit"
+                    class="btn-lumon px-6 py-2 rounded-md"
+                >
+                    Filtrar
+                </button>
+                {% if nome_filtro %}
+                <a
+                    href="{% url 'usuarios' %}"
+                    class="btn-lumon-secondary px-6 py-2 rounded-md"
+                >
+                    Limpar
+                </a>
+                {% endif %}
+            </div>
+        </form>
+
+        <!-- Tabela - Desktop -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="table-lumon">
+                <thead>
+                    <tr>
+                        <th class="w-24">Foto</th>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Perfil</th>
+                        <th>Departamento</th>
+                        <th class="w-24 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if page_obj %}
+                        {% for user in page_obj %}
+                        <tr
+                            @click="selecionarUsuario({
+                                id: {{ user.id }},
+                                nome: '{{ user.nome|escapejs }}',
+                                email: '{{ user.email|escapejs }}',
+                                perfil_id: {{ user.id_perfil.id }},
+                                departamento_id: {{ user.id_departamento.id }},
+                                foto_url: '{% if user.foto %}{{ user.foto.url }}{% endif %}'
+                            })"
+                            :class="{'selected': usuarioSelecionado && usuarioSelecionado.id === {{ user.id }}}"
+                            class="cursor-pointer hover:bg-gray-50 transition"
+                        >
+                            <td>
+                                <img
+                                    src="{% if user.foto %}{{ user.foto.url }}{% else %}{% static 'img/avatar_default.svg' %}{% endif %}"
+                                    alt="{{ user.nome }}"
+                                    class="w-12 h-12 rounded-full object-cover"
+                                >
+                            </td>
+                            <td class="font-medium">{{ user.nome }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    {{ user.id_perfil.perfil }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ user.id_departamento.sigla|default:user.id_departamento.departamento }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <!-- Botão Excluir -->
+                                <form
+                                    method="POST"
+                                    action="{% url 'usuarios' %}"
+                                    class="inline"
+                                >
+                                    {% csrf_token %}
+                                    <input type="hidden" name="acao" value="excluir">
+                                    <input type="hidden" name="id" value="{{ user.id }}">
+                                    <button
+                                        type="submit"
+                                        class="text-red-600 hover:text-red-800 transition"
+                                        title="Excluir funcionário"
+                                    >
+                                        <!-- Heroicon: x-circle -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-gray-500 py-8">
+                                Nenhum funcionário cadastrado ainda.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Cards - Mobile -->
+        <div class="block md:hidden space-y-4">
+            {% if page_obj %}
+                {% for user in page_obj %}
+                <div
+                    @click="selecionarUsuario({
+                        id: {{ user.id }},
+                        nome: '{{ user.nome|escapejs }}',
+                        email: '{{ user.email|escapejs }}',
+                        perfil_id: {{ user.id_perfil.id }},
+                        departamento_id: {{ user.id_departamento.id }},
+                        foto_url: '{% if user.foto %}{{ user.foto.url }}{% endif %}'
+                    })"
+                    :class="{'ring-2 ring-green-600': usuarioSelecionado && usuarioSelecionado.id === {{ user.id }}}"
+                    class="bg-white p-4 rounded-lg shadow hover:shadow-md transition cursor-pointer"
+                >
+                    <div class="flex items-start gap-3">
+                        <!-- Foto -->
+                        <img
+                            src="{% if user.foto %}{{ user.foto.url }}{% else %}{% static 'img/avatar_default.svg' %}{% endif %}"
+                            alt="{{ user.nome }}"
+                            class="w-16 h-16 rounded-full object-cover"
+                        >
+
+                        <!-- Informações -->
+                        <div class="flex-1 min-w-0">
+                            <h3 class="font-semibold text-gray-900 truncate">{{ user.nome }}</h3>
+                            <p class="text-sm text-gray-600 truncate">{{ user.email }}</p>
+
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    {{ user.id_perfil.perfil }}
+                                </span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ user.id_departamento.sigla|default:user.id_departamento.departamento }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Botão Excluir -->
+                        <form
+                            method="POST"
+                            action="{% url 'usuarios' %}"
+                            class="flex-shrink-0"
+                            @click.stop
+                        >
+                            {% csrf_token %}
+                            <input type="hidden" name="acao" value="excluir">
+                            <input type="hidden" name="id" value="{{ user.id }}">
+                            <button
+                                type="submit"
+                                class="text-red-600 hover:text-red-800 transition p-1"
+                                title="Excluir funcionário"
+                            >
+                                <!-- Heroicon: x-circle -->
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center text-gray-500 py-8">
+                    Nenhum funcionário cadastrado ainda.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Paginação -->
+        {% if page_obj.has_other_pages %}
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-2 mt-6">
+            <!-- Primeira -->
+            <a
+                href="?page=1{% if nome_filtro %}&nome={{ nome_filtro }}{% endif %}"
+                class="w-full sm:w-auto text-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-green-600 hover:text-white hover:border-green-600 transition {% if page_obj.number == 1 %}opacity-50 cursor-not-allowed{% endif %}"
+                {% if page_obj.number == 1 %}onclick="return false;"{% endif %}
+            >
+                Primeira
+            </a>
+
+            <!-- Anterior -->
+            <a
+                href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% if nome_filtro %}&nome={{ nome_filtro }}{% endif %}{% else %}#{% endif %}"
+                class="w-full sm:w-auto text-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-green-600 hover:text-white hover:border-green-600 transition {% if not page_obj.has_previous %}opacity-50 cursor-not-allowed{% endif %}"
+                {% if not page_obj.has_previous %}onclick="return false;"{% endif %}
+            >
+                Anterior
+            </a>
+
+            <!-- Indicador de página atual -->
+            <span class="w-full sm:w-auto text-center px-4 py-2 bg-green-600 text-white rounded-md font-medium">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            <!-- Próxima -->
+            <a
+                href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% if nome_filtro %}&nome={{ nome_filtro }}{% endif %}{% else %}#{% endif %}"
+                class="w-full sm:w-auto text-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-green-600 hover:text-white hover:border-green-600 transition {% if not page_obj.has_next %}opacity-50 cursor-not-allowed{% endif %}"
+                {% if not page_obj.has_next %}onclick="return false;"{% endif %}
+            >
+                Próxima
+            </a>
+
+            <!-- Última -->
+            <a
+                href="?page={{ page_obj.paginator.num_pages }}{% if nome_filtro %}&nome={{ nome_filtro }}{% endif %}"
+                class="w-full sm:w-auto text-center px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-green-600 hover:text-white hover:border-green-600 transition {% if page_obj.number == page_obj.paginator.num_pages %}opacity-50 cursor-not-allowed{% endif %}"
+                {% if page_obj.number == page_obj.paginator.num_pages %}onclick="return false;"{% endif %}
+            >
+                Última
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Formulário de Cadastro/Edição -->
+    <div class="card-lumon">
+        <h2
+            class="text-xl font-semibold text-gray-800 mb-4"
+            x-text="modoEdicao ? 'Alterar Usuário' : 'Novo Usuário'"
+        >
+            Novo Usuário
+        </h2>
+
+        <form method="POST" action="{% url 'usuarios' %}" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Campos ocultos -->
+            <input type="hidden" name="id" id="id" value="">
+            <input type="hidden" name="acao" id="acao" value="criar">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Coluna Esquerda: Dados -->
+                <div class="space-y-4">
+                    <!-- ID -->
+                    <div>
+                        <label for="id_display" class="form-label">ID</label>
+                        <input
+                            type="text"
+                            id="id_display"
+                            :value="modoEdicao ? usuarioSelecionado.id : 'Auto'"
+                            disabled
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600"
+                        >
+                    </div>
+
+                    <!-- Nome -->
+                    <div>
+                        <label for="nome" class="form-label">
+                            Nome Completo <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            id="nome"
+                            name="nome"
+                            required
+                            maxlength="500"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                            placeholder="Ex: Mark Scout"
+                        >
+                    </div>
+
+                    <!-- E-mail -->
+                    <div>
+                        <label for="email" class="form-label">
+                            E-mail <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            required
+                            maxlength="300"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                            placeholder="funcionario@lumon.com"
+                        >
+                    </div>
+
+                    <!-- Senha -->
+                    <div>
+                        <label for="senha" class="form-label">
+                            Senha
+                            <span class="text-red-500" x-show="!modoEdicao">*</span>
+                            <span class="text-sm text-gray-500" x-show="modoEdicao">(deixe em branco para manter a atual)</span>
+                        </label>
+                        <div class="relative">
+                            <input
+                                type="password"
+                                id="senha"
+                                name="senha"
+                                x-bind:type="showPassword ? 'text' : 'password'"
+                                :required="!modoEdicao"
+                                maxlength="12"
+                                class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                                placeholder="Digite a senha"
+                            >
+                            <!-- Ícone de olho -->
+                            <button
+                                type="button"
+                                @click="showPassword = !showPassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            >
+                                <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                                <svg x-show="showPassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Perfil -->
+                    <div>
+                        <label for="perfil" class="form-label">
+                            Perfil <span class="text-red-500">*</span>
+                        </label>
+                        <select
+                            id="perfil"
+                            name="perfil"
+                            required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                        >
+                            <option value="">Selecione um perfil</option>
+                            {% for perfil in perfis %}
+                                <option value="{{ perfil.id }}">{{ perfil.perfil }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Departamento -->
+                    <div>
+                        <label for="departamento" class="form-label">
+                            Departamento <span class="text-red-500">*</span>
+                        </label>
+                        <select
+                            id="departamento"
+                            name="departamento"
+                            required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                        >
+                            <option value="">Selecione um departamento</option>
+                            {% for dept in departamentos %}
+                                <option value="{{ dept.id }}">
+                                    {{ dept.departamento }}{% if dept.sigla %} ({{ dept.sigla }}){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Foto -->
+                <div class="space-y-4">
+                    <!-- Upload de Foto -->
+                    <div>
+                        <label for="foto" class="form-label">
+                            Foto do Funcionário
+                        </label>
+                        <input
+                            type="file"
+                            id="foto"
+                            name="foto"
+                            accept="image/*"
+                            @change="handleFileSelect($event)"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                        >
+                        <p class="text-xs text-gray-500 mt-1">
+                            Formatos aceitos: JPG, PNG. Use o Cropper abaixo para ajustar.
+                        </p>
+                    </div>
+
+                    <!-- Preview com Cropper -->
+                    <div x-show="previewUrl" class="preview-container">
+                        <img
+                            id="preview"
+                            :src="previewUrl"
+                            alt="Preview"
+                            class="preview-image"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botões -->
+            <div class="flex gap-3 mt-6">
+                <button
+                    type="submit"
+                    class="btn-lumon px-6 py-2 rounded-md"
+                    x-text="modoEdicao ? 'Salvar Alterações' : 'Cadastrar Funcionário'"
+                >
+                    Cadastrar Funcionário
+                </button>
+
+                <button
+                    type="button"
+                    @click="limparFormulario()"
+                    x-show="modoEdicao"
+                    class="btn-lumon-secondary px-6 py-2 rounded-md"
+                >
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Cropper.js já está carregado no base.html -->
+{% endblock %}

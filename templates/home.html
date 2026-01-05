@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Sistema Lumon{% endblock %}
+
+{% block extra_css %}
+<style>
+    .logo-watermark {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        max-width: 1200px;
+        height: auto;
+        opacity: 0.08;
+        z-index: -1;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Logo como marca d'água no background -->
+<img
+    src="{% static 'img/lumon_logo.jpg' %}"
+    alt="Lumon Background"
+    class="logo-watermark"
+>
+
+<div class="flex flex-col items-center justify-center min-h-[70vh]">
+    <!-- Mensagem de boas-vindas -->
+    <div class="text-center">
+        <h2 class="text-3xl font-semibold text-gray-800">
+            Bem-vindo(a) ao Sistema de Gestão
+        </h2>
+        <p class="text-gray-600 mt-4 text-lg">
+            Utilize o menu superior para navegar pelas funcionalidades do sistema.
+        </p>
+    </div>
+</div>
+{% endblock %}

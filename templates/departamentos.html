@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cadastro de Departamentos - Sistema Lumon{% endblock %}
+
+{% block content %}
+<div x-data="{
+    modoEdicao: false,
+    departamentoSelecionado: null,
+    selecionarDepartamento(dept) {
+        this.modoEdicao = true;
+        this.departamentoSelecionado = dept;
+        document.getElementById('id').value = dept.id;
+        document.getElementById('departamento').value = dept.nome;
+        document.getElementById('sigla').value = dept.sigla || '';
+        document.getElementById('acao').value = 'alterar';
+    },
+    limparFormulario() {
+        this.modoEdicao = false;
+        this.departamentoSelecionado = null;
+        document.getElementById('id').value = '';
+        document.getElementById('departamento').value = '';
+        document.getElementById('sigla').value = '';
+        document.getElementById('acao').value = 'criar';
+    }
+}">
+
+    <!-- Título -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Cadastro de Departamentos</h1>
+        <p class="text-gray-600 mt-2">Gerencie os departamentos da Lumon Industries</p>
+    </div>
+
+    <!-- Grid de Listagem -->
+    <div class="card-lumon mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4">Departamentos Cadastrados</h2>
+
+        <div class="overflow-x-auto">
+            <table class="table-lumon">
+                <thead>
+                    <tr>
+                        <th class="w-20">ID</th>
+                        <th>Departamento</th>
+                        <th class="w-32">Sigla</th>
+                        <th class="w-24 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if departamentos %}
+                        {% for dept in departamentos %}
+                        <tr
+                            @click="selecionarDepartamento({
+                                id: {{ dept.id }},
+                                nome: '{{ dept.departamento|escapejs }}',
+                                sigla: '{{ dept.sigla|default:""|escapejs }}'
+                            })"
+                            :class="{'selected': departamentoSelecionado && departamentoSelecionado.id === {{ dept.id }}}"
+                            class="cursor-pointer hover:bg-gray-50 transition"
+                        >
+                            <td>{{ dept.id }}</td>
+                            <td class="font-medium">{{ dept.departamento }}</td>
+                            <td>{{ dept.sigla|default:"-" }}</td>
+                            <td class="text-center">
+                                <!-- Botão Excluir -->
+                                <form
+                                    method="POST"
+                                    action="{% url 'departamentos' %}"
+                                    class="inline"
+                                >
+                                    {% csrf_token %}
+                                    <input type="hidden" name="acao" value="excluir">
+                                    <input type="hidden" name="id" value="{{ dept.id }}">
+                                    <button
+                                        type="submit"
+                                        class="text-red-600 hover:text-red-800 transition"
+                                        title="Excluir departamento"
+                                    >
+                                        <!-- Heroicon: x-circle -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center text-gray-500 py-8">
+                                Nenhum departamento cadastrado ainda.
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginação (a ser implementada com HTMX se necessário) -->
+        {% comment %}
+        <div class="pagination mt-4">
+            <button disabled>Primeira</button>
+            <button disabled>Anterior</button>
+            <button class="active">1</button>
+            <button disabled>Próxima</button>
+            <button disabled>Última</button>
+        </div>
+        {% endcomment %}
+    </div>
+
+    <!-- Formulário de Cadastro/Edição -->
+    <div class="card-lumon">
+        <h2
+            class="text-xl font-semibold text-gray-800 mb-4"
+            x-text="modoEdicao ? 'Alterar Departamento' : 'Novo Departamento'"
+        >
+            Novo Departamento
+        </h2>
+
+        <form method="POST" action="{% url 'departamentos' %}" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Campo oculto para ID e ação -->
+            <input type="hidden" name="id" id="id" value="">
+            <input type="hidden" name="acao" id="acao" value="criar">
+
+            <!-- ID (somente leitura) -->
+            <div>
+                <label for="id_display" class="form-label">ID</label>
+                <input
+                    type="text"
+                    id="id_display"
+                    :value="modoEdicao ? departamentoSelecionado.id : 'Auto'"
+                    disabled
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-600"
+                >
+            </div>
+
+            <!-- Nome do Departamento -->
+            <div>
+                <label for="departamento" class="form-label">
+                    Nome do Departamento <span class="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    id="departamento"
+                    name="departamento"
+                    required
+                    maxlength="300"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                    placeholder="Ex: Refinamento de Macrodados"
+                >
+            </div>
+
+            <!-- Sigla -->
+            <div>
+                <label for="sigla" class="form-label">Sigla</label>
+                <input
+                    type="text"
+                    id="sigla"
+                    name="sigla"
+                    maxlength="100"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600"
+                    placeholder="Ex: MDR"
+                >
+            </div>
+
+            <!-- Botões -->
+            <div class="flex gap-3">
+                <button
+                    type="submit"
+                    class="btn-lumon px-6 py-2 rounded-md"
+                    x-text="modoEdicao ? 'Salvar Alterações' : 'Cadastrar'"
+                >
+                    Cadastrar
+                </button>
+
+                <button
+                    type="button"
+                    @click="limparFormulario()"
+                    x-show="modoEdicao"
+                    class="btn-lumon-secondary px-6 py-2 rounded-md"
+                >
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}

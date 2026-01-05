@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema Lumon</title>
+
+    <!-- Tailwind CSS -->
+    <script src="{% static 'js/tailwind.js' %}"></script>
+
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="{% static 'css/toastr.min.css' %}">
+
+    <!-- CSS Customizado Lumon -->
+    <link rel="stylesheet" href="{% static 'css/lumon.css' %}">
+</head>
+<body class="bg-white" x-data="{ showPassword: false }">
+
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8">
+
+            <!-- Logo Lumon -->
+            <div class="text-center">
+                <img
+                    src="{% static 'img/lumon_logo.jpg' %}"
+                    alt="Lumon Industries"
+                    class="mx-auto w-80 h-auto bg-white p-4 rounded"
+                >
+                <h2 class="mt-6 text-3xl font-bold text-gray-900">
+                    Sistema Lumon
+                </h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Faça login para acessar o sistema
+                </p>
+            </div>
+
+            <!-- Formulário de Login -->
+            <div class="mt-8 bg-gray-100 rounded-lg shadow-md p-8">
+                <form method="POST" action="{% url 'login' %}" class="space-y-6">
+                    {% csrf_token %}
+
+                    <!-- E-mail -->
+                    <div>
+                        <label for="email" class="form-label text-gray-700">
+                            E-mail
+                        </label>
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            required
+                            maxlength="300"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 bg-white"
+                            placeholder="seu.email@lumon.com"
+                        >
+                    </div>
+
+                    <!-- Senha -->
+                    <div>
+                        <label for="senha" class="form-label text-gray-700">
+                            Senha
+                        </label>
+                        <div class="relative">
+                            <input
+                                id="senha"
+                                name="senha"
+                                :type="showPassword ? 'text' : 'password'"
+                                required
+                                maxlength="12"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 bg-white pr-10"
+                                placeholder="Digite sua senha"
+                            >
+                            <!-- Ícone de olho para mostrar/ocultar senha -->
+                            <button
+                                type="button"
+                                @click="showPassword = !showPassword"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            >
+                                <!-- Heroicon: eye -->
+                                <svg x-show="!showPassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                </svg>
+                                <!-- Heroicon: eye-slash -->
+                                <svg x-show="showPassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Perfil -->
+                    <div>
+                        <label for="perfil" class="form-label text-gray-700">
+                            Perfil
+                        </label>
+                        <select
+                            id="perfil"
+                            name="perfil"
+                            required
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 bg-white"
+                        >
+                            <option value="">Selecione seu perfil</option>
+                            {% for perfil in perfis %}
+                                <option value="{{ perfil.id }}">{{ perfil.perfil }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Botão de Login -->
+                    <div>
+                        <button
+                            type="submit"
+                            class="w-full btn-lumon py-3 px-4 rounded-md text-white font-medium hover:opacity-90 transition"
+                        >
+                            Entrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Informação de ajuda -->
+            <div class="text-center mt-4">
+                <p class="text-xs text-gray-500">
+                    Sistema de Gestão de Pessoal - Lumon Industries<br>
+                    © 2026 Todos os direitos reservados
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Alpine.js -->
+    <script src="{% static 'js/alpine.min.js' %}" defer></script>
+
+    <!-- jQuery (necessário para Toastr) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Toastr.js -->
+    <script src="{% static 'js/toastr.min.js' %}"></script>
+
+    <!-- Configuração do Toastr -->
+    <script>
+        // Configurações globais do Toastr
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        // Exibir mensagens do Django
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    toastr.error("{{ message }}");
+                {% elif message.tags == 'warning' %}
+                    toastr.warning("{{ message }}");
+                {% elif message.tags == 'success' %}
+                    toastr.success("{{ message }}");
+                {% elif message.tags == 'info' %}
+                    toastr.info("{{ message }}");
+                {% else %}
+                    toastr.info("{{ message }}");
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </script>
+</body>
+</html>
